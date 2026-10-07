@@ -1,0 +1,17 @@
+.git
+.gitignore
+.venvs
+.venv
+__pycache__
+*.py[cod]
+*$py.class
+.pytest_cache
+.ruff_cache
+.marimo
+runs
+dist
+build
+*.egg-info
+docs
+.agents
+containers

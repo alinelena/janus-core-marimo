@@ -1,0 +1,31 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.venv/
+.venvs/
+env/
+venv/
+
+# Marimo / Jupyter
+__marimo__/
+.ipynb_checkpoints/
+
+# Testing & Linting
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+
+# Janus calculation run outputs
+runs/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Local binaries
+tools/bin/
+

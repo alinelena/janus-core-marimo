@@ -1,0 +1,61 @@
+[build-system]
+requires = ["uv_build>=0.10.0,<0.11.0"]
+build-backend = "uv_build"
+
+[project]
+name = "janus-core-marimo"
+version = "0.1.0"
+description = "Interactive 8-tab Marimo workbench for STFC janus-core atomistic MLIP simulations with Chemiscope 3D and Altair 2D visualizations"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "janus-core",
+    "marimo",
+    "chemiscope",
+    "altair",
+    "pandas",
+    "numpy",
+    "ase",
+    "pyyaml",
+]
+
+[project.scripts]
+janus-inspect-structure = "janus_marimo.inspector:main"
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "ruff",
+]
+
+[tool.uv.build-backend]
+module-name = "janus_marimo"
+module-root = "src"
+source-include = [
+    "AGENTS.md",
+    "janus_workbench.py",
+    "tools/**",
+    "tests/**",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = [
+    "ignore:.*deduplicated selection parameter.*:UserWarning",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "."]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501", "B018"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+

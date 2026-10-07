@@ -1,0 +1,14 @@
+services:
+  janus-workbench:
+    build:
+      context: ..
+      dockerfile: containers/Dockerfile
+    image: janus-core-marimo:latest
+    ports:
+      - "2718:2718"
+    volumes:
+      - ../runs:/workspace/runs
+      - ../.venvs:/workspace/.venvs
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
