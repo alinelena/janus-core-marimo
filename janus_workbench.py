@@ -892,12 +892,40 @@ def opt_view_cell(
 
             _n_frames = len(_parsed.trajectory)
 
-            if _selected_step is None:
-                _cs_view = mo.lazy(
-                    lambda _t=_parsed.trajectory, _build=build_chemiscope_widget: _build(
-                        _t, mode="structure", show_force_arrows=True
-                    )
+            _cs_idx = _selected_step if _selected_step is not None else 0
+            _extra_props = (
+                {
+                    "delta_energy_mev_atom": {
+                        "target": "structure",
+                        "values": _parsed.traj_df["delta_energy_mev_atom"].tolist(),
+                        "units": "meV/atom",
+                    },
+                    "max_force_ev_ang": {
+                        "target": "structure",
+                        "values": _parsed.traj_df["max_force_ev_ang"].tolist(),
+                        "units": "eV/Å",
+                    },
+                    "volume_ang3": {
+                        "target": "structure",
+                        "values": _parsed.traj_df["volume_ang3"].tolist(),
+                        "units": "Å³",
+                    },
+                }
+                if (not _parsed.traj_df.empty and len(_parsed.traj_df) == len(_parsed.trajectory))
+                else None
+            )
+            _cs_view = mo.lazy(
+                lambda _t=_parsed.trajectory, _idx=_cs_idx, _props=_extra_props, _build=build_chemiscope_widget: _build(
+                    _t,
+                    mode="structure",
+                    show_force_arrows=True,
+                    initial_structure_index=_idx,
+                    max_frames=max(len(_t), 200),
+                    extra_properties=_props,
                 )
+            )
+
+            if _selected_step is None:
                 _final_e = _parsed.traj_df["energy_ev"].iloc[-1]
                 _final_f = _parsed.traj_df["max_force_ev_ang"].iloc[-1]
                 _banner = mo.callout(
@@ -924,11 +952,6 @@ def opt_view_cell(
                 _target_atoms = _parsed.optimized_atoms
             else:
                 _step_atoms = _parsed.trajectory[_selected_step]
-                _cs_view = mo.lazy(
-                    lambda _a=_step_atoms, _build=build_chemiscope_widget: _build(
-                        [_a], mode="structure", show_force_arrows=True
-                    )
-                )
                 _step_e = _parsed.traj_df["energy_ev"].iloc[_selected_step]
                 _step_de = _parsed.traj_df["delta_energy_mev_atom"].iloc[_selected_step]
                 _step_f = _parsed.traj_df["max_force_ev_ang"].iloc[_selected_step]

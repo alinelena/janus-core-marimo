@@ -73,6 +73,22 @@ def test_build_chemiscope_widget_structure_and_default_modes() -> None:
     assert w_default.mode == "default"
 
 
+def test_build_chemiscope_widget_with_initial_structure_index() -> None:
+    import json
+
+    frames = [ase.build.bulk("Cu", "fcc", a=3.6 + 0.05 * i) for i in range(5)]
+    w = build_chemiscope_widget(frames, mode="structure", initial_structure_index=3)
+    val = json.loads(w.value)
+    assert len(val["structures"]) == 5
+    assert val["settings"]["pinned"] == [3]
+    assert w.selected_ids == {"structure": 3}
+
+    # Test out-of-bounds clamping
+    w_clamp = build_chemiscope_widget(frames, mode="structure", initial_structure_index=10)
+    val_clamp = json.loads(w_clamp.value)
+    assert val_clamp["settings"]["pinned"] == [4]
+
+
 def test_all_8_altair_chart_builders_produce_valid_specs() -> None:
     # 1. Singlepoint
     atom_df = pd.DataFrame(

@@ -164,6 +164,7 @@ def build_chemiscope_widget(
     extra_properties: dict[str, dict[str, Any]] | None = None,
     environments_cutoff: float | None = None,
     max_frames: int = 200,
+    initial_structure_index: int | None = None,
 ) -> Any:
     """Build and return a Chemiscope anywidget (`StructureWidget` or `ChemiscopeWidget`)."""
     cleaned_structures, properties, detected_force_key = sanitize_atoms_for_chemiscope(
@@ -192,6 +193,9 @@ def build_chemiscope_widget(
         struct_settings["shape"] = "forces"
 
     settings: dict[str, Any] = {"structure": [struct_settings]}
+    if initial_structure_index is not None and cleaned_structures:
+        clamped_idx = max(0, min(int(initial_structure_index), len(cleaned_structures) - 1))
+        settings["pinned"] = [clamped_idx]
 
     environments = None
     if environments_cutoff is not None and cleaned_structures:
@@ -206,7 +210,7 @@ def build_chemiscope_widget(
             "ignore",
             message=".*chemiscope.show only displays a widget.*",
         )
-        return chemiscope.show(
+        widget = chemiscope.show(
             structures=cleaned_structures,
             properties=properties,
             shapes=shapes,
@@ -214,6 +218,13 @@ def build_chemiscope_widget(
             settings=settings,
             mode=mode,
         )
+        if initial_structure_index is not None and cleaned_structures:
+            clamped_idx = max(0, min(int(initial_structure_index), len(cleaned_structures) - 1))
+            try:
+                widget.selected_ids = {"structure": clamped_idx}
+            except Exception:
+                pass
+        return widget
 
 
 def compute_preflight_atom_properties(
